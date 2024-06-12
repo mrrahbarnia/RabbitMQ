@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: backend
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./app:/app/
+    depends_on:
+      - redis
+      - rabbitmq
+    restart: always
+  
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    volumes:
+      - redis-data:/data
+  
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+  
+  # consumer1:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   container_name: consumer1
+  #   command: python consuming...
+  #   volumes:
+  #     - ./app:/app/
+  #   depends_on:
+  #     - db
+  #     - redis
+  #     - rabbitmq
+  #   restart: always
+
+
+
+volumes:
+  redis-data:
