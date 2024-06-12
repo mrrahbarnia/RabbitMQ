@@ -27,6 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOCAL_APPS = [
+    'data.apps.DataConfig',
+]
+
+THIRD_PARTY_APP = [
+    'rest_framework',
+    'drf_spectacular',
+]
+
 
 # Application definition
 
@@ -37,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    *LOCAL_APPS,
+    *THIRD_PARTY_APP
 ]
 
 MIDDLEWARE = [
@@ -121,3 +132,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Django rest_framework config
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Redis config
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
