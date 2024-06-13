@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 
 LOCAL_APPS = [
     'data.apps.DataConfig',
+    'mq.apps.MqConfig',
 ]
 
 THIRD_PARTY_APP = [

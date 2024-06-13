@@ -11,6 +11,8 @@ from . import services
 class InsertDataApi(APIView):
 
     class InputSerializer(serializers.Serializer):
+        # TODO: Getting email for sending a message within another service.
+        email = serializers.EmailField()
         title = serializers.CharField(max_length=80)
         content = serializers.CharField(max_length=1000)
 

@@ -1,3 +1,5 @@
+import json
+
 from redis import Redis
 from django.conf import settings
 
