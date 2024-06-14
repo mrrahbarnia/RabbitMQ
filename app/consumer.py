@@ -32,6 +32,7 @@ def main_callback(ch, method, properties, body):
             channel.basic_nack(delivery_tag=method.delivery_tag)
 
 def dead_letter_callback(ch, method, properties, body):
+    # TODO: Use sentry or other observability options in production.
     print('Hello from dead letter queue...')
 
 channel.basic_qos(prefetch_count=1)
