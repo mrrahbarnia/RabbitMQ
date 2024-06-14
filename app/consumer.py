@@ -10,16 +10,34 @@ connection = pika.BlockingConnection(
 )
 channel = connection.channel()
 
-channel.queue_declare(queue='persist_queue', durable=True)
+channel.exchange_declare(exchange='main_exchange', exchange_type='direct')
+channel.exchange_declare(exchange='dlx', exchange_type='fanout')
 
-def callback(ch, method, properties, body):
+channel.queue_declare(
+    queue='main_queue', durable=True, arguments={'x-dead-letter-exchange': 'dlx', 'x-message-ttl': 2000}
+)
+channel.queue_declare(queue='dl_queue')
+
+channel.queue_bind(queue='main_queue', exchange='main_exchange', routing_key='email')
+channel.queue_bind(queue='dl_queue', exchange='dlx')
+
+def main_callback(ch, method, properties, body):
     if properties.content_type == 'sending_email':
         from data.services import send_email
-        send_email(email=body)
-        channel.basic_ack(delivery_tag=method.delivery_tag)
-        print('Done')
+        try:
+            send_email(email=body)
+            channel.basic_ack(delivery_tag=method.delivery_tag)
+            print('Done')
+        except Exception:
+            channel.basic_nack(delivery_tag=method.delivery_tag)
+
+def dead_letter_callback(ch, method, properties, body):
+    print('Hello from dead letter queue...')
 
 channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue='persist_queue', on_message_callback=callback)
+
+channel.basic_consume(queue='main_queue', on_message_callback=main_callback)
+channel.basic_consume(queue='dl_queue', on_message_callback=dead_letter_callback)
+
 channel.start_consuming()
 channel.close()

@@ -28,3 +28,4 @@ def send_email(*, email: str) -> None:
     # Simulating a long running task.(sending email)
     print(f'Email is sending to {email}')
     time.sleep(3)
+    raise ValueError('Something went wrong')
