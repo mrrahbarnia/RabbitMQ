@@ -1,26 +1,30 @@
 version: '3.8'
 
 services:
-  
+
   redis:
     image: redis:7.2-alpine
     container_name: redis
     volumes:
       - redis-data:/data
-  
+
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
-  
+
   backend:
     build:
       context: .
       dockerfile: ./Dockerfile
     container_name: backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "
+            sleep 5 &&
+            python manage.py runserver 0.0.0.0:8000
+            "
     ports:
       - '8000:8000'
     volumes:
@@ -28,22 +32,41 @@ services:
     depends_on:
       - redis
       - rabbitmq
-    restart: on-failure
+    restart: always
   
-  # consumer1:
-  #   build:
-  #     context: .
-  #     dockerfile: ./Dockerfile
-  #   container_name: consumer1
-  #   command: python mq/consumers.py
-  #   volumes:
-  #     - ./app:/app/
-  #   depends_on:
-  #     # - rabbitmq
-  #     - backend
-  #   restart: always
-
-
+  worker1:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: worker1
+    command: >
+      sh -c "
+            sleep 5 &&
+            python consumer.py
+            "
+    volumes:
+      - ./app:/app/
+    depends_on:
+      - redis
+      - rabbitmq
+    restart: always
+  
+  worker2:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: worker2
+    command: >
+      sh -c "
+            sleep 5 &&
+            python consumer.py
+            "
+    volumes:
+      - ./app:/app/
+    depends_on:
+      - redis
+      - rabbitmq
+    restart: always
 
 volumes:
   redis-data:

@@ -21,5 +21,6 @@ RUN adduser \
     mkdir -p /vol/web/media && \
     chown -R mohammadreza:mohammadreza /vol && \
     chmod -R 700 /vol
+    # chmod +x /app/entrypoint.sh
 
 USER mohammadreza

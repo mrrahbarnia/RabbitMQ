@@ -21,6 +21,7 @@ class InsertDataApi(APIView):
         input_serializer = self.InputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
         services.insert_data(
+            email=input_serializer.validated_data.get('email'),
             title=input_serializer.validated_data.get('title'),
             content=input_serializer.validated_data.get('content')
         )
