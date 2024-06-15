@@ -1,9 +1,12 @@
+import logging
 import pika
 import os
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 django.setup()
+
+logger = logging.getLogger('backend')
 
 connection = pika.BlockingConnection(
     pika.URLParameters('amqp://guest:guest@rabbitmq/')
@@ -27,13 +30,13 @@ def main_callback(ch, method, properties, body):
         try:
             send_email(email=body)
             channel.basic_ack(delivery_tag=method.delivery_tag)
-            print('Done')
+            logger.info('Done')
         except Exception:
             channel.basic_nack(delivery_tag=method.delivery_tag)
 
 def dead_letter_callback(ch, method, properties, body):
     # TODO: Use sentry or other observability options in production.
-    print('Hello from dead letter queue...')
+    logger.warning('Hello from dead letter queue...')
 
 channel.basic_qos(prefetch_count=1)
 

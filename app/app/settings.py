@@ -141,3 +141,34 @@ REST_FRAMEWORK = {
 # Redis config
 REDIS_HOST = 'redis'
 REDIS_PORT = 6379
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/backend.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+    },
+    'loggers': {
+        'backend': {
+            'handlers': ['file', 'console'],
+            'propagate': True,
+        },
+    },
+}

@@ -1,9 +1,12 @@
+import logging
 import time
 
 from redis import Redis
 from django.conf import settings
 
 from producer import publish
+
+logger = logging.getLogger('backend')
 
 HOST = settings.REDIS_HOST
 PORT = settings.REDIS_PORT
@@ -26,6 +29,6 @@ def list_titles() -> None:
 
 def send_email(*, email: str) -> None:
     # Simulating a long running task.(sending email)
-    print(f'Email is sending to {email}')
+    logger.info(f'Email is sending to {email}')
     time.sleep(3)
     raise ValueError('Something went wrong')
